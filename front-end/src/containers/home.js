@@ -88,7 +88,7 @@ class Home extends Component {
         sabado: ''
       })
     }
-
+ 
     for (let m in db) {
       for (let n in db[m].schedule) {
         for (let o in rows) {
@@ -149,13 +149,13 @@ class Home extends Component {
     }
 
     let newRows = []
-    for (let k = 0; k < ((rows.length/2)-1); k++) {
+    for (let k = 0; k < ((rows.length/2)); k++) {
       id += 1
       let aux = rows[k]
       aux = Object.assign({}, aux, { id: id })
       newRows[k] = aux
     }
-
+    console.log(newRows)
     return newRows
   }
 
