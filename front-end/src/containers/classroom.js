@@ -152,56 +152,68 @@ class ClassRoom extends Component {
     this.setState({
       subject: e.target.value,
       infoSubjects: this.createSubject(e.target.value)
-    })  
+    }) 
+    this.get() 
   }
 
   createSubject(subject) {
     let subs = this.state.datasource
     let obj = {}
     let newStr = ''
-
-    for (let i in subs) {
-      if (subs[i].subject === subject) {
-        obj = Object.assign({}, obj, subs[i])
-      }
-    }
-    for (let i = 0; i < (obj.day).length; i++) {
-      for (let j = (i + 1); j < (obj.day).length; j++) {
-        if (obj.day[i] === obj.day[j]) {
-          (obj.day).splice(j, 1)
+    if (subject !== '') {
+      for (let i in subs) {
+        if (subs[i].subject === subject) {
+          obj = Object.assign({}, obj, subs[i])
         }
       }
-    }
-
-    let vet = obj.schedule
-    obj.schedule = []
-    for (let i = 0; i < (vet).length; i++) {
-      for (let j = (i + 1); j < (vet).length; j++) {
-        let str = vet[i].split('-')
-        let strp = vet[j].split('-')
-        if (parseInt(strp[1], 10) - parseInt(str[0], 10) === 2) {
-          newStr = str[0] + '-' + strp[1]        
-          if (obj.schedule.length < obj.day.length) {
-            obj.schedule.push(newStr)
+      for (let i = 0; i < (obj.day).length; i++) {
+        for (let j = (i + 1); j < (obj.day).length; j++) {
+          if (obj.day[i] === obj.day[j]) {
+            (obj.day).splice(j, 1)
           }
         }
       }
-    }
-    
-    let newForm = []
-    for (let i in obj.day) {
-      newForm.push(obj.day[i] + ': ' + obj.schedule[i])
-    }
 
-    obj = Object.assign({}, obj, { newForm: newForm })
-  
-    return (
-      (obj.newForm).map(option => (
-        <option key={Math.random()*1000} value={option}>
-          {option}
-        </option>
-      ))
-    )
+      let vet = obj.schedule
+      obj.schedule = []
+      for (let i = 0; i < (vet).length; i++) {
+        for (let j = (i + 1); j < (vet).length; j++) {
+          let str = vet[i].split('-')
+          let strp = vet[j].split('-')
+          if (parseInt(strp[1], 10) - parseInt(str[0], 10) === 2) {
+            newStr = str[0] + '-' + strp[1]        
+            if (obj.schedule.length < obj.day.length) {
+              obj.schedule.push(newStr)
+            }
+          }
+        }
+      }
+      
+      let newForm = []
+      for (let i in obj.day) {
+        newForm.push(obj.day[i] + ': ' + obj.schedule[i])
+      }
+
+      obj = Object.assign({}, obj, { newForm: newForm })
+    
+      return (
+        <div>
+          <p>Curso: {obj.course}</p>
+          <p>Professor: {obj.teacher}</p>
+          {(obj.newForm).map(option => (
+            <p key={Math.random()*1000}>
+              {option}
+            </p>
+          ))}
+        </div>
+      )
+    }
+    else {
+      return (
+        <div>
+        </div>
+      )
+    }
   }
 
   handleCancel = () => {
@@ -350,7 +362,6 @@ class ClassRoom extends Component {
 
   getSubjects() {
     const data = this.state.datasource
-    console.log('this', this.state.datasource)
     let row = []
     row.push('')
     for (let i in data) {

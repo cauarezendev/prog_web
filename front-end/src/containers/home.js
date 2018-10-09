@@ -48,21 +48,25 @@ const styles = theme => ({
 
 class Home extends Component {
   state = {
-    name: 'Sala 1',
+    name: '',
+    nameGet: '',
     datasource: []
   }
 
-  componentDidMount() {
-    this.get()
-  }
-
-  get() {
+  get(name) {
     axios
-    .get(constants.END_POINT + constants.CLASS + '/' + this.state.name)
+    .get(constants.END_POINT + constants.CLASS + '/' + name)
     .then((response) => {
-      this.setState({
-        datasource: response.data,
-      })
+      if (response.data !== '') {
+        this.setState({
+          datasource: response.data,
+        })
+      } 
+      else {
+        this.setState({
+          datasource: {}
+        })
+      }
     })
   }
 
@@ -156,18 +160,10 @@ class Home extends Component {
   }
 
   handleChange = (e) => {
-    console.log(e.target.value)
-    if (e.target.value === '') {
-      this.setState({
-        name: e.target.value,
-      })  
-    }
-    else {
-      this.setState({
-        name: e.target.value,
-      })
-    }
-    this.get()
+    this.setState({
+      name: e.target.value,
+    })
+    this.get(e.target.value)
   }
 
   render() {

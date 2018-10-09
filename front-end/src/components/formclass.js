@@ -110,7 +110,7 @@ class FormClass extends Component {
       
     return (
       <div style={{ display: 'block' }}>
-        <form className={classes.container} noValidate autoComplete="off">
+        <form className={classes.container} noValidate autoComplete="on">
           <TextField
             required
             id="outlined-required"
