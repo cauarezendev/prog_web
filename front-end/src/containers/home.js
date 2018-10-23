@@ -11,6 +11,7 @@ import TableCell              from '@material-ui/core/TableCell'
 import TableHead              from '@material-ui/core/TableHead'
 import TableRow               from '@material-ui/core/TableRow'
 import Paper                  from '@material-ui/core/Paper'
+import Grid                   from '@material-ui/core/Grid'
 
 // Contants
 import * as constants         from '../constants/constants'
@@ -147,16 +148,16 @@ class Home extends Component {
         }
       }
     }
-
+    
     let newRows = []
-    for (let k = 0; k < ((rows.length/2)); k++) {
+    for (let k = 0; k < 12; k++) {
       id += 1
       let aux = rows[k]
       aux = Object.assign({}, aux, { id: id })
       newRows[k] = aux
     }
-    console.log(newRows)
-    return newRows
+  
+    return newRows  
   }
 
   handleChange = (e) => {
@@ -171,30 +172,36 @@ class Home extends Component {
     const rows = this.createCells()
     return (
       <div>
-        <h2>Quadro de Horários</h2>
-        <TextField
-          id="outlined-select-currency-native"
-          select
-          label="Sala"
-          className={classes.textField}
-          value={this.state.name}
-          onChange={this.handleChange}
-          SelectProps={{
-            native: true,
-            MenuProps: {
-              className: classes.menu,
-            },
-          }}
-          helperText="Escolha a sala"
-          margin="normal"
-          variant="outlined"
-        >
-          {constants.currencies.map(option => (
-            <option key={Math.random()*1000} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </TextField>
+        <Grid container spacing={12}>
+          <Grid item xs={6}>
+            <TextField
+              id="outlined-select-currency-native"
+              select
+              label="Sala"
+              className={classes.textField}
+              value={this.state.name}
+              onChange={this.handleChange}
+              SelectProps={{
+                native: true,
+                MenuProps: {
+                  className: classes.menu,
+                },
+              }}
+              helperText="Escolha a sala"
+              margin="normal"
+              variant="outlined"
+            >
+              {constants.currencies.map(option => (
+                <option key={Math.random()*1000} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={6}>
+            <h2>Quadro de Horários</h2>
+          </Grid>
+        </Grid>
         <Paper className={classes.root}>
           <Table className={classes.table}>
             <TableHead>

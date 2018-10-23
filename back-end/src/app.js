@@ -9,14 +9,14 @@ const app = express()
 
 // Conecta ao banco
 try {
-  let options = {
-    user: 'caua',
-    pass: 'abc123',
-    useNewUrlParser: true 
-  }
-  let dbUrl = 'mongodb://localhost:27017/prog_web?authSource=admin'
-
-  mongoose.connect(dbUrl, options)
+  //let options = {
+  //  user: 'caua',
+  //  pass: 'abc123',
+  //  useNewUrlParser: true 
+  //}
+  //let dbUrl = 'mongodb://localhost:27017/prog_web?authSource=admin'
+  let dbUrl = 'mongodb://localhost:27017/prog_web'
+  mongoose.connect(dbUrl)
   mongoose.set('useCreateIndex', true)
 
   let db = mongoose.connection
@@ -25,9 +25,9 @@ try {
 
   })
   db.on('error', console.error.bind(console, 'connection error:'))
-  db.on('disconnected', () => {
-    self.connectToDatabase()
-  })
+  //db.on('disconnected', () => {
+  //  self.connectToDatabase()
+  //})
 } 
 catch (error) {
   console.log(error.message)

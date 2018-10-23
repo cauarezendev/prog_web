@@ -100,8 +100,8 @@ function getModalStyle() {
     top: `${top}%`,
     left: `${left}%`,
     transform: `translate(-${top}%, -${left}%)`,
-    width: '70%',
-    height: '70%',
+    width: '90%',
+    height: '90%',
   };
 }
 
@@ -141,7 +141,6 @@ class ClassRoom extends Component {
   }
 
   handleChangeClass = (e) => {
-
     this.setState({
       name: e.target.value,
     })  
@@ -394,41 +393,44 @@ class ClassRoom extends Component {
 
     return (
       <div className={classes.root}>
-        <Grid container spacing={24} className={classes.grid}>
+        <Grid container spacing={12}>
+          <Grid item xs={6}>
+            <TextField
+              id="outlined-select-currency-native"
+              select
+              label="Sala"
+              className={classes.textField}
+              value={this.state.name}
+              onChange={this.handleChangeClass}
+              SelectProps={{
+                native: true,
+                MenuProps: {
+                  className: classes.menu,
+                },
+              }}
+              helperText="Escolha a sala"
+              margin="normal"
+              variant="outlined"
+            >
+              {constants.currencies.map(option => (
+                <option key={Math.random()*1000} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+            <Button 
+              variant="contained"
+              size="small"
+              className={classes.buttonPreview}
+              onClick={this.handleOpen}
+            >
+             Preview
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
           <h1>Cadastro de Salas</h1>
         </Grid>
-        <Grid container spacing={24} className={classes.grid}>
-          <TextField
-            id="outlined-select-currency-native"
-            select
-            label="Sala"
-            className={classes.textField}
-            value={this.state.name}
-            onChange={this.handleChangeClass}
-            SelectProps={{
-              native: true,
-              MenuProps: {
-                className: classes.menu,
-              },
-            }}
-            helperText="Escolha a sala"
-            margin="normal"
-            variant="outlined"
-          >
-            {constants.currencies.map(option => (
-              <option key={Math.random()*1000} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
-          <Button 
-            variant="contained"
-            size="small"
-            className={classes.buttonPreview}
-            onClick={this.handleOpen}
-          >
-           Preview
-          </Button>
+        </Grid>
           <Modal
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description"
@@ -440,6 +442,8 @@ class ClassRoom extends Component {
               <TimeSheet name={this.state.name}/>
             </div>
           </Modal>
+          
+        <Grid container spacing={24} className={classes.grid}>
         </Grid>
         <Grid container spacing={24} className={classes.grid}>
           <ExpansionPanel 

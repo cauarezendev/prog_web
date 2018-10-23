@@ -27,12 +27,12 @@ const CustomTableCell = withStyles(theme => ({
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
-    overflowX: 'auto',
+    //marginTop: theme.spacing.unit * 3,
+    //overflowX: 'auto',
   },
   table: {
     minWidth: 700,
-    marginTop: '-10px'
+    marginTop: '-15px'
   },
   row: {
     '&:nth-of-type(odd)': {
@@ -57,37 +57,55 @@ class TimeSheet extends Component {
   }
 
   handleTable() {
-    let mongo = this.state.datasource
-    let rows = []
+    const horas = constants.schedulesTable
+    const db = this.state.datasource
     let id = 0
+    let rows = []
 
-    for (let i in mongo) {
-      for (let j in mongo[i].schedule) {
-        let name = mongo[i].subject + ' - ' + mongo[i].teacher
-        if (mongo[i].day[j] === 'Segunda-feira') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: name, terca: '', quarta: '', quinta: '', sexta: '', sabado: ''})
-        } 
-        if (mongo[i].day[j] === 'Terça-feira') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: name, quarta: '', quinta: '', sexta: '', sabado: ''})
-        }
-        if (mongo[i].day[j] === 'Quarta-feira') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: name, quinta: '', sexta: '', sabado: ''})
-        }
-        if (mongo[i].day[j] === 'Quinta-feira') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: name, sexta: '', sabado: ''})
-        }
-        if (mongo[i].day[j] === 'Sexta-feira') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: name, sabado: ''})
-        }
-        if (mongo[i].day[j] === 'Sabado') {
-          rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: '', sabado: name })
+    for (let i in horas) {
+      rows.push({ 
+        id: 0,
+        hora: horas[i].value,
+        segunda: '',
+        terca: '',
+        quarta: '',
+        quinta: '',
+        sexta: '',
+        sabado: ''
+      })
+    }
+    
+    let trows = []
+    for (let m in db) {
+      for (let n in db[m].schedule) {
+        for (let o in rows) {
+          if (rows[o].hora === db[m].schedule[n]) {
+            if (db[m].day[n] === 'Segunda-feira') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: db[m].subject, terca: '', quarta: '', quinta: '', sexta: '', sabado: ''})
+            } 
+            if (db[m].day[n] === 'Terça-feira') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: db[m].subject, quarta: '', quinta: '', sexta: '', sabado: ''})
+            }
+            if (db[m].day[n] === 'Quarta-feira') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: db[m].subject, quinta: '', sexta: '', sabado: ''})
+            }
+            if (db[m].day[n] === 'Quinta-feira') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: db[m].subject, sexta: '', sabado: ''})
+            }
+            if (db[m].day[n] === 'Sexta-feira') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: '', sexta: db[m].subject, sabado: ''})
+            }
+            if (db[m].day[n] === 'Sabado') {
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: '', sexta: '', sabado: db[m].subject})
+            }
+          }
         }
       }
     }
-    
+
+    console.log(trows)
     for (let m = 0; m < rows.length; m++) {
       for (let n = (m + 1); n < rows.length; n++) {
-        id += 1
         if (rows[m].hora === rows[n].hora) {
           if (rows[m].segunda === '' && rows[n].segunda !== '') {
             let dia = rows[n].segunda 
@@ -117,10 +135,83 @@ class TimeSheet extends Component {
         }
       }
     }
+    
+    let newRows = []
+    for (let k = 0; k < 12; k++) {
+      id += 1
+      let aux = rows[k]
+      aux = Object.assign({}, aux, { id: id })
+      newRows[k] = aux
+    }
 
-    console.log(rows)
-    return rows
+    return newRows    
   }
+
+  //handleTable() {
+  //  let mongo = this.state.datasource
+  //  let rows = []
+  //  let id = 0
+//
+  //  for (let i in mongo) {
+  //    for (let j in mongo[i].schedule) {
+  //      let name = mongo[i].subject + ' - ' + mongo[i].teacher
+  //      if (mongo[i].day[j] === 'Segunda-feira') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: name, terca: '', quarta: '', quinta: '', sexta: '', sabado: ''})
+  //      } 
+  //      if (mongo[i].day[j] === 'Terça-feira') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: name, quarta: '', quinta: '', sexta: '', sabado: ''})
+  //      }
+  //      if (mongo[i].day[j] === 'Quarta-feira') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: name, quinta: '', sexta: '', sabado: ''})
+  //      }
+  //      if (mongo[i].day[j] === 'Quinta-feira') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: name, sexta: '', sabado: ''})
+  //      }
+  //      if (mongo[i].day[j] === 'Sexta-feira') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: name, sabado: ''})
+  //      }
+  //      if (mongo[i].day[j] === 'Sabado') {
+  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: '', sabado: name })
+  //      }
+  //    }
+  //  }
+  //  
+  //  console.log(rows)
+  //  for (let m = 0; m < rows.length; m++) {
+  //    for (let n = (m + 1); n < rows.length; n++) {
+  //      id += 1
+  //      if (rows[m].hora === rows[n].hora) {
+  //        if (rows[m].segunda === '' && rows[n].segunda !== '') {
+  //          let dia = rows[n].segunda 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, segunda: dia})    
+  //        }
+  //        if (rows[m].terca === '' && rows[n].terca !== '') {
+  //          let dia = rows[n].terca 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, terca: dia})    
+  //        }
+  //        if (rows[m].quarta === '' && rows[n].quarta !== '') {
+  //          let dia = rows[n].quarta 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, quarta: dia})    
+  //        }
+  //        if (rows[m].quinta === '' && rows[n].quinta !== '') {
+  //          let dia = rows[n].quinta 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, quinta: dia})    
+  //        }
+  //        if (rows[m].sexta === '' && rows[n].sexta !== '') {
+  //          let dia = rows[n].sexta 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, sexta: dia})    
+  //        }
+  //        if (rows[m].sabado === '' && rows[n].sabado !== '') {
+  //          let dia = rows[n].sabado 
+  //          rows[m] = Object.assign({}, rows[m], {id: id, sabado: dia})    
+  //        }
+  //      }
+  //    }
+  //  }
+//
+  //  console.log(rows)
+  //  return rows
+  //}
 
 
   render() {
