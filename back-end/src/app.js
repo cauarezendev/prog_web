@@ -16,7 +16,7 @@ try {
   //}
   //let dbUrl = 'mongodb://localhost:27017/prog_web?authSource=admin'
   let dbUrl = 'mongodb://localhost:27017/prog_web'
-  mongoose.connect(dbUrl)
+  mongoose.connect(dbUrl, { useNewUrlParser: true })
   mongoose.set('useCreateIndex', true)
 
   let db = mongoose.connection
