@@ -7,10 +7,7 @@ exports.get = async() => {
   try {
     const data = await ClassRoom.find()
     if (data.length === 0) {
-      return {
-        error: true,
-        message: 'Não há nenhuma aula cadastrada'
-      } 
+      return []
     }
     else {
       return data
@@ -25,10 +22,7 @@ exports.getByName = async(name) => {
   try {
     const data = await ClassRoom.find({ name: name })
     if (data.length === 0) {
-      return {
-        error: true,
-        message: 'Não há nenhuma aula cadastrada'
-      } 
+      return []
     }
     else {
       return data

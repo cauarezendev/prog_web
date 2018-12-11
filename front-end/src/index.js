@@ -1,8 +1,8 @@
-import React                    from 'react'
-import ReactDOM                 from 'react-dom'
-import { BrowserRouter }        from 'react-router-dom'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
 
-import Routes                   from './routes/routes'
+import Routes from './routes/routes'
 
 import './index.css'
 import 'typeface-roboto'

@@ -16,12 +16,10 @@ import Typography             from '@material-ui/core/Typography'
 import ListItem               from '@material-ui/core/ListItem'
 import ListItemIcon           from '@material-ui/core/ListItemIcon'
 import ListItemText           from '@material-ui/core/ListItemText'
-import Collapse               from '@material-ui/core/Collapse'
 import InboxIcon              from '@material-ui/icons/MoveToInbox'
-import ExpandLess             from '@material-ui/icons/ExpandLess'
-import ExpandMore             from '@material-ui/icons/ExpandMore'
-import StarBorder             from '@material-ui/icons/StarBorder'
 import HomeIcon               from '@material-ui/icons/Home'
+import Modal                  from '@material-ui/core/Modal'
+
 
 // Containers
 import Home                   from '../containers/home'
@@ -63,6 +61,13 @@ const styles = theme => ({
   menuitem: {
     marginLeft: '-50px'
   },
+  paper: {
+    position: 'absolute',
+    width: theme.spacing.unit * 50,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4,
+  },
   menuHome: {
     marginLeft: '16px'
   }
@@ -83,9 +88,17 @@ class Routes extends Component {
     this.setState(state => ({ open: !state.open }));
   }
 
+  handleOpen = () => {
+    this.setState({ open: true });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
   render() {
     const { classes } = this.props
-
+    
     const listMenu = (
       <div>
         <ListItem button>
@@ -96,25 +109,14 @@ class Routes extends Component {
             <ListItemText primary={this.state.menu.home} className={classes.menuHome}/>
           </Link>
         </ListItem>
-        <ListItem button onClick={this.handleClick}>
+        <ListItem button>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-        <ListItemText inset primary={this.state.menu.register} />
-            {this.state.open ? <ExpandLess /> : <ExpandMore />}
+          <Link to="/classroom" className={classes.linkrouter}>
+            <ListItemText inset primary={this.state.menu.classroom} className={classes.menuitem}/>  
+          </Link>
         </ListItem>
-        <Collapse in={this.state.open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemIcon>
-                <StarBorder />
-              </ListItemIcon>
-              <Link to="/classroom" className={classes.linkrouter}>
-                <ListItemText inset primary={this.state.menu.classroom} className={classes.menuitem}/>
-              </Link>
-            </ListItem>
-          </List>
-        </Collapse>
       </div>
     )
 

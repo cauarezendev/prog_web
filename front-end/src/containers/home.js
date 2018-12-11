@@ -1,6 +1,5 @@
 import React, { Component }   from 'react'
 import PropTypes              from 'prop-types'
-import axios                  from 'axios'
 
 // Material-UI
 import { withStyles }         from '@material-ui/core/styles'
@@ -12,9 +11,12 @@ import TableHead              from '@material-ui/core/TableHead'
 import TableRow               from '@material-ui/core/TableRow'
 import Paper                  from '@material-ui/core/Paper'
 import Grid                   from '@material-ui/core/Grid'
+import Button                 from '@material-ui/core/Button'
+import Modal                  from '@material-ui/core/Modal'
 
 // Contants
 import * as constants         from '../constants/constants'
+import xml from 'xml-js'
 
 const CustomTableCell = withStyles(theme => ({
   head: {
@@ -44,36 +46,60 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     width: '300px'
-  }
+  },
+  buttonPreview: {
+    margin: theme.spacing.unit,
+    height: '20px',
+    marginTop: '30px'
+  },
+  paper: {
+    position: 'absolute',
+    width: theme.spacing.unit * 50,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4,
+  },
 })
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
 
 class Home extends Component {
   state = {
     name: '',
     nameGet: '',
-    datasource: []
+    datasource: [],
+    class: [],
+    open: false
   }
 
-  get(name) {
-    axios
-    .get(constants.END_POINT + constants.CLASS + '/' + name)
-    .then((response) => {
-      if (response.data !== '') {
-        this.setState({
-          datasource: response.data,
-        })
-      } 
-      else {
-        this.setState({
-          datasource: {}
-        })
-      }
+  async get(name) {
+    this.setState({ nameGet: name })
+    await fetch(constants.END_POINT + constants.CLASS + '/' + name)
+    .then(response => response.json())
+    .then(json => {
+      this.setState({ datasource: json })
+      localStorage.setItem(name, JSON.stringify(json))
+    })
+    .catch(err => {
+      this.setState({ datasource: JSON.parse(localStorage.getItem(name)) })
+      console.log('data>>>>', this.state.datasource)
     })
   }
 
   createCells() {
     const horas = constants.schedulesTable
-    const db = this.state.datasource
+    let db =  this.state.datasource
+  
     let id = 0
     let rows = []
 
@@ -86,7 +112,6 @@ class Home extends Component {
         quarta: '',
         quinta: '',
         sexta: '',
-        sabado: ''
       })
     }
  
@@ -95,22 +120,19 @@ class Home extends Component {
         for (let o in rows) {
           if (rows[o].hora === db[m].schedule[n]) {
             if (db[m].day[n] === 'Segunda-feira') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: db[m].subject, terca: '', quarta: '', quinta: '', sexta: '', sabado: ''})
+              rows.push({id: 0, hora: rows[o].hora, segunda: db[m].subject + ' - ' + db[m].teacher, terca: '', quarta: '', quinta: '', sexta: ''})
             } 
             if (db[m].day[n] === 'Terça-feira') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: db[m].subject, quarta: '', quinta: '', sexta: '', sabado: ''})
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: db[m].subject + ' - ' + db[m].teacher, quarta: '', quinta: '', sexta: ''})
             }
             if (db[m].day[n] === 'Quarta-feira') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: db[m].subject, quinta: '', sexta: '', sabado: ''})
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: db[m].subject + ' - ' + db[m].teacher, quinta: '', sexta: ''})
             }
             if (db[m].day[n] === 'Quinta-feira') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: db[m].subject, sexta: '', sabado: ''})
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: db[m].subject + ' - ' + db[m].teacher, sexta: ''})
             }
             if (db[m].day[n] === 'Sexta-feira') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: '', sexta: db[m].subject, sabado: ''})
-            }
-            if (db[m].day[n] === 'Sabado') {
-              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: '', sexta: '', sabado: db[m].subject})
+              rows.push({id: 0, hora: rows[o].hora, segunda: '', terca: '', quarta: '', quinta: '', sexta: db[m].subject + ' - ' + db[m].teacher })
             }
           }
         }
@@ -150,7 +172,7 @@ class Home extends Component {
     }
     
     let newRows = []
-    for (let k = 0; k < 12; k++) {
+    for (let k = 0; k < 7; k++) {
       id += 1
       let aux = rows[k]
       aux = Object.assign({}, aux, { id: id })
@@ -160,19 +182,41 @@ class Home extends Component {
     return newRows  
   }
 
+  handleOpen = () => {
+    fetch('https://api.calendario.com.br/?ano=2018&estado=RJ&cidade=RIO_DAS_OSTRAS&token=Y2F1YS5yZXplbmRlQGhvdG1haWwuY29tJmhhc2g9NjAyNjM0MTI')
+    .then(response => response.json())
+    .then(json => {
+      this.setState({ xlm: json })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+    this.setState({ 
+      open: true, 
+    })
+  }
+
+  handleClose = () => {
+    this.setState({ open: false });
+  }
+
+  getHollidays = () => {
+    //var result = xml.xml2json(this.state.xml, { compact: true, spaces: 4 })
+    //console.log(result)
+  }
   handleChange = (e) => {
     this.setState({
       name: e.target.value,
     })
     this.get(e.target.value)
   }
-
   render() {
     const { classes } = this.props
     const rows = this.createCells()
     return (
       <div>
-        <Grid container spacing={12}>
+        <Grid container spacing={16}>
           <Grid item xs={6}>
             <TextField
               id="outlined-select-currency-native"
@@ -197,6 +241,28 @@ class Home extends Component {
                 </option>
               ))}
             </TextField>
+            <Button 
+                variant="contained"
+                size="small"
+                className={classes.buttonPreview}
+                onClick={this.handleOpen}
+              >
+              API
+            </Button>
+          </Grid>
+          <Grid item xs={4}>
+        
+            <Modal
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            open={this.state.open}
+            onClose={this.handleClose}
+            className={classes.modal}
+          >
+            <div style={getModalStyle()} className={classes.paper}>
+              {this.getHollidays()}
+            </div>
+          </Modal>
           </Grid>
           <Grid item xs={6}>
             <h2>Quadro de Horários</h2>
@@ -212,7 +278,6 @@ class Home extends Component {
                 <CustomTableCell numeric>Quarta-fera</CustomTableCell>
                 <CustomTableCell numeric>Quinta-feira</CustomTableCell>
                 <CustomTableCell numeric>Sexta-feira</CustomTableCell>
-                <CustomTableCell numeric>Sábado</CustomTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -222,12 +287,11 @@ class Home extends Component {
                     <CustomTableCell component="th" scope="row">
                       {row.hora}
                     </CustomTableCell>
-                    <CustomTableCell numeric>{row.segunda}</CustomTableCell>
-                    <CustomTableCell numeric>{row.terca}</CustomTableCell>
-                    <CustomTableCell numeric>{row.quarta}</CustomTableCell>
-                    <CustomTableCell numeric>{row.quinta}</CustomTableCell>
-                    <CustomTableCell numeric>{row.sexta}</CustomTableCell>
-                    <CustomTableCell numeric>{row.sabado}</CustomTableCell>
+                    <CustomTableCell style={{textAlign: 'center'}} numeric>{row.segunda}</CustomTableCell>
+                    <CustomTableCell style={{textAlign: 'center'}} numeric>{row.terca}</CustomTableCell>
+                    <CustomTableCell style={{textAlign: 'center'}} numeric>{row.quarta}</CustomTableCell>
+                    <CustomTableCell style={{textAlign: 'center'}} numeric>{row.quinta}</CustomTableCell>
+                    <CustomTableCell style={{textAlign: 'center'}} numeric>{row.sexta}</CustomTableCell>
                   </TableRow>
                 )
               })} 

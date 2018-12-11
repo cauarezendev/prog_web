@@ -7,22 +7,50 @@
     "@material-ui/icons": "^3.0.1",
     "axios": "^0.18.0",
     "connected-react-router": "^4.5.0",
+    "foreman": "^3.0.1",
     "history": "^4.7.2",
+    "local-storage": "^1.4.2",
     "lodash": "^4.17.11",
     "react": "^16.5.2",
+    "react-cookies": "^0.1.0",
     "react-dom": "^16.5.2",
-    "react-redux": "^5.0.7",
+    "react-redux": "^5.1.1",
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^4.0.8",
     "react-scripts": "1.1.5",
-    "redux": "^4.0.0",
+    "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "typeface-roboto": "0.0.54"
+    "typeface-roboto": "0.0.54",
+    "xml-js": "^1.6.8"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "pack": "build --dir",
+    "dist": "npm run build && build",
+    "postinstall": "install-app-deps",
+    "electron-start": "node src/electron-wait-react",
+    "react-start": "BROWSER=none react-scripts start",
+    "start-electron": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/Linux/Electron .",
+    "watch": "./node_modules/.bin/webpack-dev-server",
+    "electron-rebuild": "./node_modules/.bin/electron-rebuild"
+  },
+  "homepage": "./",
+  "main": "src/electron-starter.js",
+  "build": {
+    "appId": "com.electron.electron-with-create-react-app",
+    "win": {
+      "iconUrl": "https://cdn2.iconfinder.com/data/icons/designer-skills/128/react-256.png"
+    },
+    "directories": {
+      "buildResources": "public"
+    }
+  },
+  "devDependencies": {
+    "electron": "^3.0.11",
+    "electron-builder": "^20.38.3"
   }
 }

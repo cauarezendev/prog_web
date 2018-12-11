@@ -1,6 +1,5 @@
 import React, { Component }   from 'react'
 import PropTypes              from 'prop-types'
-import axios                  from 'axios'
 
 // Material-UI
 import { withStyles }         from '@material-ui/core/styles'
@@ -47,18 +46,25 @@ class TimeSheet extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(constants.END_POINT + constants.CLASS + '/' + this.props.name)
-      .then((response) => {
-        this.setState({
-          datasource: response.data
-        })
-      })
+    this.get()
+  }
+
+  async get() {
+    await fetch(constants.END_POINT + constants.CLASS + '/' + this.props.name)
+    .then(response => response.json())
+    .then(json => {
+      this.setState({ datasource: json })
+      localStorage.setItem(this.props.name, JSON.stringify(json))
+    })
+    .catch(err => {
+      this.setState({ datasource: JSON.parse(localStorage.getItem(this.props.name)) })
+    })
   }
 
   handleTable() {
     const horas = constants.schedulesTable
-    const db = this.state.datasource
+    let db = this.state.datasource
+
     let id = 0
     let rows = []
 
@@ -75,7 +81,6 @@ class TimeSheet extends Component {
       })
     }
     
-    let trows = []
     for (let m in db) {
       for (let n in db[m].schedule) {
         for (let o in rows) {
@@ -103,7 +108,6 @@ class TimeSheet extends Component {
       }
     }
 
-    console.log(trows)
     for (let m = 0; m < rows.length; m++) {
       for (let n = (m + 1); n < rows.length; n++) {
         if (rows[m].hora === rows[n].hora) {
@@ -137,7 +141,7 @@ class TimeSheet extends Component {
     }
     
     let newRows = []
-    for (let k = 0; k < 12; k++) {
+    for (let k = 0; k < 7; k++) {
       id += 1
       let aux = rows[k]
       aux = Object.assign({}, aux, { id: id })
@@ -146,73 +150,6 @@ class TimeSheet extends Component {
 
     return newRows    
   }
-
-  //handleTable() {
-  //  let mongo = this.state.datasource
-  //  let rows = []
-  //  let id = 0
-//
-  //  for (let i in mongo) {
-  //    for (let j in mongo[i].schedule) {
-  //      let name = mongo[i].subject + ' - ' + mongo[i].teacher
-  //      if (mongo[i].day[j] === 'Segunda-feira') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: name, terca: '', quarta: '', quinta: '', sexta: '', sabado: ''})
-  //      } 
-  //      if (mongo[i].day[j] === 'Terça-feira') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: name, quarta: '', quinta: '', sexta: '', sabado: ''})
-  //      }
-  //      if (mongo[i].day[j] === 'Quarta-feira') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: name, quinta: '', sexta: '', sabado: ''})
-  //      }
-  //      if (mongo[i].day[j] === 'Quinta-feira') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: name, sexta: '', sabado: ''})
-  //      }
-  //      if (mongo[i].day[j] === 'Sexta-feira') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: name, sabado: ''})
-  //      }
-  //      if (mongo[i].day[j] === 'Sabado') {
-  //        rows.push({id: 0, hora: mongo[i].schedule[j], segunda: '', terca: '', quarta: '', quinta: '', sexta: '', sabado: name })
-  //      }
-  //    }
-  //  }
-  //  
-  //  console.log(rows)
-  //  for (let m = 0; m < rows.length; m++) {
-  //    for (let n = (m + 1); n < rows.length; n++) {
-  //      id += 1
-  //      if (rows[m].hora === rows[n].hora) {
-  //        if (rows[m].segunda === '' && rows[n].segunda !== '') {
-  //          let dia = rows[n].segunda 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, segunda: dia})    
-  //        }
-  //        if (rows[m].terca === '' && rows[n].terca !== '') {
-  //          let dia = rows[n].terca 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, terca: dia})    
-  //        }
-  //        if (rows[m].quarta === '' && rows[n].quarta !== '') {
-  //          let dia = rows[n].quarta 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, quarta: dia})    
-  //        }
-  //        if (rows[m].quinta === '' && rows[n].quinta !== '') {
-  //          let dia = rows[n].quinta 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, quinta: dia})    
-  //        }
-  //        if (rows[m].sexta === '' && rows[n].sexta !== '') {
-  //          let dia = rows[n].sexta 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, sexta: dia})    
-  //        }
-  //        if (rows[m].sabado === '' && rows[n].sabado !== '') {
-  //          let dia = rows[n].sabado 
-  //          rows[m] = Object.assign({}, rows[m], {id: id, sabado: dia})    
-  //        }
-  //      }
-  //    }
-  //  }
-//
-  //  console.log(rows)
-  //  return rows
-  //}
-
 
   render() {
     const { classes } = this.props

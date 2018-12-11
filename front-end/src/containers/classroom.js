@@ -119,6 +119,7 @@ class ClassRoom extends Component {
     subject: '',
     infoSubjects: '',
     datasource: [],
+    local: '',
     visibleSubject: true,
     form: {
       valueDays: [],
@@ -130,13 +131,15 @@ class ClassRoom extends Component {
     },
   }
 
-  get() {
-    axios
-    .get(constants.END_POINT + constants.CLASS + '/' + this.state.name)
-    .then((response) => {
-      this.setState({
-        datasource: response.data
-      })
+  async get() {
+    await fetch(constants.END_POINT + constants.CLASS + '/' + this.state.name)
+    .then(response => response.json())
+    .then(json => {
+      this.setState({ datasource: json })
+      localStorage.setItem(this.state.name, JSON.stringify(json))
+    })
+    .catch(err => {
+      this.setState({ datasource: JSON.parse(localStorage.getItem(this.state.name)) })
     })
   }
 
@@ -157,34 +160,12 @@ class ClassRoom extends Component {
 
   createSubject(subject) {
     let subs = this.state.datasource
+
     let obj = {}
-    let newStr = ''
     if (subject !== '') {
       for (let i in subs) {
         if (subs[i].subject === subject) {
           obj = Object.assign({}, obj, subs[i])
-        }
-      }
-      for (let i = 0; i < (obj.day).length; i++) {
-        for (let j = (i + 1); j < (obj.day).length; j++) {
-          if (obj.day[i] === obj.day[j]) {
-            (obj.day).splice(j, 1)
-          }
-        }
-      }
-
-      let vet = obj.schedule
-      obj.schedule = []
-      for (let i = 0; i < (vet).length; i++) {
-        for (let j = (i + 1); j < (vet).length; j++) {
-          let str = vet[i].split('-')
-          let strp = vet[j].split('-')
-          if (parseInt(strp[1], 10) - parseInt(str[0], 10) === 2) {
-            newStr = str[0] + '-' + strp[1]        
-            if (obj.schedule.length < obj.day.length) {
-              obj.schedule.push(newStr)
-            }
-          }
         }
       }
       
@@ -194,7 +175,7 @@ class ClassRoom extends Component {
       }
 
       obj = Object.assign({}, obj, { newForm: newForm })
-    
+      
       return (
         <div>
           <p>Curso: {obj.course}</p>
@@ -360,13 +341,13 @@ class ClassRoom extends Component {
   }
 
   getSubjects() {
-    const data = this.state.datasource
+    let data = this.state.datasource
     let row = []
+
     row.push('')
     for (let i in data) {
       row.push(data[i].subject)
     }
-
     return row
   }
 
@@ -390,10 +371,10 @@ class ClassRoom extends Component {
   render() {
     const { classes } = this.props
     const subjects = this.getSubjects()
-
+  
     return (
       <div className={classes.root}>
-        <Grid container spacing={12}>
+        <Grid container spacing={16}>
           <Grid item xs={6}>
             <TextField
               id="outlined-select-currency-native"
